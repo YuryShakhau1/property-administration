@@ -5,10 +5,7 @@ import by.shakhau.hotel.dto.ArrivalTime;
 import by.shakhau.hotel.dto.Contacts;
 import by.shakhau.hotel.dto.Hotel;
 import by.shakhau.hotel.mapper.HotelMapper;
-import by.shakhau.hotel.model.AddressEntity;
 import by.shakhau.hotel.model.AmenityEntity;
-import by.shakhau.hotel.model.ArrivalTimeEntity;
-import by.shakhau.hotel.model.ContactsEntity;
 import by.shakhau.hotel.model.HotelEntity;
 import by.shakhau.hotel.model.HotelFiler;
 import by.shakhau.hotel.repository.AmenityRepository;
@@ -22,14 +19,24 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
+import static by.shakhau.hotel.util.TestUtil.ADDRESS_CITY;
+import static by.shakhau.hotel.util.TestUtil.AMENITY1;
+import static by.shakhau.hotel.util.TestUtil.AMENITY2;
+import static by.shakhau.hotel.util.TestUtil.AMENITY3;
+import static by.shakhau.hotel.util.TestUtil.HISTOGRAM_COUNT_1;
+import static by.shakhau.hotel.util.TestUtil.HISTOGRAM_COUNT_2;
+import static by.shakhau.hotel.util.TestUtil.HISTOGRAM_VALUE_1;
+import static by.shakhau.hotel.util.TestUtil.HISTOGRAM_VALUE_2;
+import static by.shakhau.hotel.util.TestUtil.HOTEL_ID;
+import static by.shakhau.hotel.util.TestUtil.HOTEL_NAME;
+import static by.shakhau.hotel.util.TestUtil.createHistogram;
+import static by.shakhau.hotel.util.TestUtil.createHotel;
+import static by.shakhau.hotel.util.TestUtil.createHotelEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -38,35 +45,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class HotelServiceTest {
-
-    private static final Random r = new Random();
-    private static final Long HOTEL_ID = r.nextLong();
-    private static final String HOTEL_BRAND = UUID.randomUUID().toString();
-    private static final String HOTEL_NAME = UUID.randomUUID().toString();
-    private static final String HOTEL_DESCRIPTION = UUID.randomUUID().toString();
-
-    private static final String AMENITY1 = UUID.randomUUID().toString();
-    private static final String AMENITY2 = UUID.randomUUID().toString();
-    private static final String AMENITY3 = UUID.randomUUID().toString();
-
-    private static final Long ADDRESS_ID = r.nextLong();
-    private static final String ADDRESS_CITY = UUID.randomUUID().toString();
-    private static final String ADDRESS_COUNTRY = UUID.randomUUID().toString();
-    private static final String ADDRESS_STREET = UUID.randomUUID().toString();
-    private static final int ADDRESS_HOUSE_NUMBER = r.nextInt();
-    private static final String ADDRESS_POST_CODE = String.valueOf(r.nextInt());
-
-    private static final String CONTACTS_EMAIL = UUID.randomUUID().toString();
-    private static final String CONTACTS_PHONE = String.valueOf(r.nextInt());
-
-    private static final LocalTime CHECK_IN = LocalTime.of(1, 2, 3);
-    private static final LocalTime CHECK_OUT = LocalTime.of(4, 5, 6);
-
-    private static final String HISTOGRAM_VALUE_1 = UUID.randomUUID().toString();
-    private static final String HISTOGRAM_VALUE_2 = UUID.randomUUID().toString();
-
-    private static final Long HISTOGRAM_COUNT_1 = r.nextLong();
-    private static final Long HISTOGRAM_COUNT_2 = r.nextLong();
 
     @Mock
     private HotelMapper hotelMapper;
@@ -375,93 +353,5 @@ public class HotelServiceTest {
         verify(hotelRepository, never()).countByCity();
         verify(hotelRepository, never()).countByCountry();
         verify(hotelRepository, never()).countByAmenities();
-    }
-
-    private HotelEntity createHotelEntity() {
-        var hotel = new HotelEntity();
-        hotel.setId(HOTEL_ID);
-        hotel.setBrand(HOTEL_BRAND);
-        hotel.setName(HOTEL_NAME);
-        hotel.setDescription(HOTEL_DESCRIPTION);
-        hotel.setAmenities(new ArrayList<>(List.of(
-                new AmenityEntity(AMENITY1),
-                new AmenityEntity(AMENITY2),
-                new AmenityEntity(AMENITY3))));
-        hotel.setAddress(createAddressEntity(hotel));
-        hotel.setContacts(createContactsEntity(hotel));
-        hotel.setArrivalTime(createArrivalTimeEntity());
-        return hotel;
-    }
-
-    private AddressEntity createAddressEntity(HotelEntity hotel) {
-        var address = new AddressEntity();
-        address.setId(ADDRESS_ID);
-        address.setCity(ADDRESS_CITY);
-        address.setCountry(ADDRESS_COUNTRY);
-        address.setStreet(ADDRESS_STREET);
-        address.setHouseNumber(ADDRESS_HOUSE_NUMBER);
-        address.setPostCode(ADDRESS_POST_CODE);
-        address.setHotel(hotel);
-        return address;
-    }
-
-    private ContactsEntity createContactsEntity(HotelEntity hotel) {
-        var contacts = new ContactsEntity();
-        contacts.setEmail(CONTACTS_EMAIL);
-        contacts.setPhone(CONTACTS_PHONE);
-        contacts.setHotel(hotel);
-        return contacts;
-    }
-
-    private ArrivalTimeEntity createArrivalTimeEntity() {
-        var arrivalTime = new ArrivalTimeEntity();
-        arrivalTime.setCheckIn(CHECK_IN);
-        arrivalTime.setCheckOut(CHECK_OUT);
-        return arrivalTime;
-    }
-
-    private Hotel createHotel() {
-        var hotel = new Hotel();
-        hotel.setId(HOTEL_ID);
-        hotel.setBrand(HOTEL_BRAND);
-        hotel.setName(HOTEL_NAME);
-        hotel.setDescription(HOTEL_DESCRIPTION);
-        hotel.setAmenities(new ArrayList<>(List.of(
-                AMENITY1, AMENITY2, AMENITY3)));
-        hotel.setAddress(createAddress());
-        hotel.setContacts(createContacts());
-        hotel.setArrivalTime(createArrivalTime());
-        return hotel;
-    }
-
-    private Address createAddress() {
-        var address = new Address();
-        address.setCity(ADDRESS_CITY);
-        address.setCountry(ADDRESS_COUNTRY);
-        address.setStreet(ADDRESS_STREET);
-        address.setHouseNumber(ADDRESS_HOUSE_NUMBER);
-        address.setPostCode(ADDRESS_POST_CODE);
-        return address;
-    }
-
-    private ArrivalTime createArrivalTime() {
-        var arrivalTime = new ArrivalTime();
-        arrivalTime.setCheckIn(CHECK_IN);
-        arrivalTime.setCheckOut(CHECK_OUT);
-        return arrivalTime;
-    }
-
-    private Contacts createContacts() {
-        var contacts = new Contacts();
-        contacts.setEmail(CONTACTS_EMAIL);
-        contacts.setPhone(CONTACTS_PHONE);
-        return contacts;
-    }
-
-    private List<Object[]> createHistogram() {
-        return List.of(
-                new Object[] { HISTOGRAM_VALUE_1, HISTOGRAM_COUNT_1 },
-                new Object[] { HISTOGRAM_VALUE_2, HISTOGRAM_COUNT_2 }
-        );
     }
 }

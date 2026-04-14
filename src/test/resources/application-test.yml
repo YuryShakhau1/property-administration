@@ -2,8 +2,12 @@ spring:
   application:
     name: property-administration
 
-  profiles:
-    include: db-h2-test
+  datasource:
+    url: jdbc:h2:mem:property_administration_test;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: Test user name
+    password: Test password
+    platform: h2
 
   h2:
     console:

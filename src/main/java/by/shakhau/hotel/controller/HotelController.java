@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -30,41 +33,51 @@ public class HotelController {
     private HotelResponseMapper hotelResponseMapper;
 
     @GetMapping(value = "/hotels", produces = APPLICATION_JSON_VALUE)
-    public List<HotelResponse> getHotels() {
-        return hotelService.findAll().stream()
-                .map(h -> hotelResponseMapper.toResponse(h))
-                .toList();
+    public Flux<HotelResponse> getHotels() {
+        return Flux.defer(() -> Flux.fromIterable(hotelService.findAll().stream()
+                        .map(h -> hotelResponseMapper.toResponse(h))
+                        .collect(Collectors.toList())))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping(value = "/hotels/{id}", produces = APPLICATION_JSON_VALUE)
-    public Hotel getHotel(@PathVariable long id) {
-        return hotelService.findById(id);
+    public Mono<Hotel> getHotel(@PathVariable long id) {
+        return Mono.fromCallable(() -> hotelService.findById(id))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping(value = "/search", produces = APPLICATION_JSON_VALUE)
-    public List<Hotel> searchHotels(
+    public Flux<HotelResponse> searchHotels(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) List<String> amenities) {
-        return hotelService.search(new HotelFiler(name, brand, city, country, amenities));
+        return Flux.defer(() -> Flux.fromIterable(
+                        hotelService.search(new HotelFiler(name, brand, city, country, amenities)).stream()
+                                .map(h -> hotelResponseMapper.toResponse(h))
+                                .collect(Collectors.toList())))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping(value = "/hotels", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public HotelResponse createHotel(@RequestBody Hotel hotel) {
-        return Optional.ofNullable(hotelService.save(hotel))
-                .map(h -> hotelResponseMapper.toResponse(h))
-                .orElseThrow();
+    public Mono<HotelResponse> createHotel(@RequestBody Hotel hotel) {
+        return Mono.fromCallable(() -> Optional.ofNullable(hotelService.save(hotel))
+                        .map(h -> hotelResponseMapper.toResponse(h))
+                        .orElseThrow())
+                .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping(value = "/hotels/{id}/amenities", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void addHotelAmenities(@PathVariable Long id, @RequestBody List<String> amenities) {
-        hotelService.addAmenities(id, amenities);
+    public Mono<Void> addHotelAmenities(@PathVariable Long id, @RequestBody List<String> amenities) {
+        return Mono.fromRunnable(() -> hotelService.addAmenities(id, amenities))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
     }
 
     @GetMapping(value = "/histogram/{param}", produces = APPLICATION_JSON_VALUE)
-    public Map<String, Long> getHistogram(@PathVariable String param) {
-        return hotelService.getHistogram(param);
+    public Mono<Map<String, Long>> getHistogram(@PathVariable String param) {
+        return Mono.fromCallable(() -> hotelService.getHistogram(param))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }
