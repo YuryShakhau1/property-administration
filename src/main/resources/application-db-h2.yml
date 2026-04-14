@@ -1,7 +1,10 @@
 spring:
   datasource:
     url: jdbc:h2:mem:property_administration;DB_CLOSE_DELAY=-1
-    driverClassName: org.h2.Driver
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:password}
     platform: h2
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect

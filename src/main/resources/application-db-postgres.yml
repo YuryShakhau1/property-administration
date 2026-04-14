@@ -3,6 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/property_administration
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

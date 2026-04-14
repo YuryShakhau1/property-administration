@@ -6,6 +6,10 @@ import by.shakhau.hotel.dto.Hotel;
 import by.shakhau.hotel.model.HotelFiler;
 import by.shakhau.hotel.service.HotelService;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,5 +83,10 @@ public class HotelController {
     public Mono<Map<String, Long>> getHistogram(@PathVariable String param) {
         return Mono.fromCallable(() -> hotelService.getHistogram(param))
                 .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Mono<ResponseEntity<String>> handleException(DataIntegrityViolationException exception) {
+        return Mono.just(new ResponseEntity<>("Exception: " + exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }
