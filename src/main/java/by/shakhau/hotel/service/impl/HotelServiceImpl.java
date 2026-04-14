@@ -56,17 +56,20 @@ public class HotelServiceImpl implements HotelService {
     @Transactional
     @Override
     public void addAmenities(Long id, Collection<String> amenities) {
-        hotelRepository.findById(id).ifPresent(hotel -> {
-            var existedAmenities = hotel.getAmenities().stream()
-                    .map(AmenityEntity::getName)
-                    .collect(Collectors.toSet());
-            var amenitiesToAdd = new HashSet<>(amenities).stream()
-                    .filter(amenityName -> !existedAmenities.contains(amenityName))
-                    .map(amenityName -> amenityRepository.findByName(amenityName).orElseGet(() -> new AmenityEntity(amenityName)))
-                    .toList();
-            hotel.getAmenities().addAll(amenitiesToAdd);
-            hotelRepository.save(hotel);
-        });
+        hotelRepository.findById(id).ifPresentOrElse(hotel -> {
+                    var existedAmenities = hotel.getAmenities().stream()
+                            .map(AmenityEntity::getName)
+                            .collect(Collectors.toSet());
+                    var amenitiesToAdd = new HashSet<>(amenities).stream()
+                            .filter(amenityName -> !existedAmenities.contains(amenityName))
+                            .map(amenityName -> amenityRepository.findByName(amenityName).orElseGet(() -> new AmenityEntity(amenityName)))
+                            .toList();
+                    hotel.getAmenities().addAll(amenitiesToAdd);
+                    hotelRepository.save(hotel);
+                },
+                () -> {
+                    throw new IllegalArgumentException("Unknown hotel id: " + id);
+                });
     }
 
     @Override

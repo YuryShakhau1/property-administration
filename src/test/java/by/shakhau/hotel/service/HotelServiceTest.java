@@ -257,6 +257,20 @@ public class HotelServiceTest {
     }
 
     @Test
+    public void shouldThrowExceptionWhenHotelDoesNotExistToAmenity() {
+        var amenityToAdd = UUID.randomUUID().toString();
+        var existedAmenityToAdd = AMENITY2;
+
+        when(hotelRepository.findById(HOTEL_ID)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            service.addAmenities(HOTEL_ID, List.of(amenityToAdd, existedAmenityToAdd));
+        });
+
+        verify(hotelRepository, never()).save(any());
+    }
+
+    @Test
     public void shouldReturnEmptyListWhenNotFound() {
         var filer = new HotelFiler(HOTEL_NAME, null, ADDRESS_CITY, null, null);
         when(hotelRepository.findAll(any(Specification.class))).thenReturn(List.of());
