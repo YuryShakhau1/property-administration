@@ -41,9 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class HotelControllerIntegrationTest {
 
-    private static final String USER_NAME = "Test user name";
-    private static final String PASSWORD = "Test password";
-
     @Value("${server.port}")
     private Integer port;
     private WebTestClient webClient;

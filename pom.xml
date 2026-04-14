@@ -129,8 +129,10 @@
 
                 <configuration>
                     <excludes>
+                        <exclude>**/model/**</exclude>
                         <exclude>**/mapper/**</exclude>
                         <exclude>**/repository/**</exclude>
+                        <exclude>**/controller/**</exclude>
                         <exclude>**/HotelAdministrationApplication.class</exclude>
                     </excludes>
                 </configuration>
