@@ -15,7 +15,7 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long>, JpaSp
             attributePaths = { "address", "contacts", "arrivalTime", "amenities" },
             type = EntityGraph.EntityGraphType.FETCH)
     @Query("SELECT h FROM HotelEntity h WHERE h.id = :id")
-    Optional<HotelEntity> findByIdFull(Long id);
+    Optional<HotelEntity> findById(Long id);
 
     @Override
     @EntityGraph(

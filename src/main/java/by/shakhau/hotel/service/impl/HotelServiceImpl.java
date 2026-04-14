@@ -38,7 +38,7 @@ public class HotelServiceImpl implements HotelService {
     @Transactional(readOnly = true)
     @Override
     public Hotel findById(Long id) {
-        return hotelMapper.toDtoFull(hotelRepository.findByIdFull(id).orElse(null));
+        return hotelMapper.toDtoFull(hotelRepository.findById(id).orElse(null));
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class HotelServiceImpl implements HotelService {
     @Transactional
     @Override
     public void addAmenities(Long id, Collection<String> amenities) {
-        hotelRepository.findByIdFull(id).ifPresent(hotel -> {
+        hotelRepository.findById(id).ifPresent(hotel -> {
             var existedAmenities = hotel.getAmenities().stream()
                     .map(AmenityEntity::getName)
                     .collect(Collectors.toSet());
@@ -89,7 +89,6 @@ public class HotelServiceImpl implements HotelService {
         }
 
         return rows.stream()
-                .filter(r -> r[0] != null)
                 .collect(Collectors.toMap(
                         r -> (String) r[0],
                         r -> (Long) r[1]

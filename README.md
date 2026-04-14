@@ -1,6 +1,6 @@
 # Property administration
 
-## Task description
+## Description
 
 Необходимо разработать RESTful API приложение для работы с отелями со следующими методами:
 1)
