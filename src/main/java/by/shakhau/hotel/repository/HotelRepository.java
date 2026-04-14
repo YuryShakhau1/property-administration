@@ -12,4 +12,8 @@ public interface HotelRepository extends JpaRepository<HotelEntity, Long> {
     @EntityGraph(attributePaths = {"address", "contacts", "arrivalTime", "amenities"})
     @Query("SELECT h FROM HotelEntity h WHERE h.id = :id")
     Optional<HotelEntity> findByIdFull(Long id);
+
+    @EntityGraph(attributePaths = {"amenities"})
+    @Query("SELECT h FROM HotelEntity h WHERE h.id = :id")
+    Optional<HotelEntity> findByIdWithAmenities(Long id);
 }

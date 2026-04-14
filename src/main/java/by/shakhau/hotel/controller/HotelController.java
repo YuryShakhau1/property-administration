@@ -46,8 +46,8 @@ public class HotelController {
     }
 
     @PostMapping(value = "/hotels/{id}/amenities", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public void addHotelAmenities(@PathVariable List<AmenityEntity> amenities) {
-
+    public void addHotelAmenities(@PathVariable Long id, @RequestBody List<String> amenities) {
+        hotelService.addAmenities(id, amenities);
     }
 
     @GetMapping(value = "/histogram/{param}", produces = APPLICATION_JSON_VALUE)

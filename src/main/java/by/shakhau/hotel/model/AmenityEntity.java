@@ -32,4 +32,8 @@ public class AmenityEntity {
     public AmenityEntity(String name) {
         this.name = name;
     }
+
+    @OneToOne
+    @JoinColumn(name = "hotel_id", nullable = false, unique = true)
+    private HotelEntity hotel;
 }
