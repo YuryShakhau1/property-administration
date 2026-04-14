@@ -3,7 +3,7 @@ spring:
     name: property-administration
 
   profiles:
-    include: db-h2
+    include: db-h2-test
 
   h2:
     console:
