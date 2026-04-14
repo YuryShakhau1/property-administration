@@ -1,6 +1,6 @@
-package by.shakhau.hotel.dto;
+package by.shakhau.hotel.model;
 
 import java.util.List;
 
-public record HotelSearch(String name, String brand, String city, String country, List<String> amenities) {
+public record HotelFiler(String name, String brand, String city, String country, List<String> amenities) {
 }

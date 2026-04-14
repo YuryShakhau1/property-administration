@@ -11,7 +11,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
 @Setter
-public class HotelShortResponse {
+public class HotelResponse {
 
     private Long id;
     private String name;
