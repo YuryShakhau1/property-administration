@@ -2,6 +2,7 @@ package by.shakhau.hotel.controller;
 
 import by.shakhau.hotel.controller.mapper.HotelControllerMapper;
 import by.shakhau.hotel.controller.request.CreateHotelRequest;
+import by.shakhau.hotel.controller.response.ExceptionResponse;
 import by.shakhau.hotel.controller.response.HotelResponse;
 import by.shakhau.hotel.dto.Hotel;
 import by.shakhau.hotel.model.HotelFiler;
@@ -23,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -136,7 +139,16 @@ public class HotelController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public Mono<ResponseEntity<String>> handleException(DataIntegrityViolationException exception) {
-        return Mono.just(new ResponseEntity<>("Exception: " + exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+    public Mono<ResponseEntity<ExceptionResponse>> handleException(
+            DataIntegrityViolationException exception, ServerWebExchange exchange) {
+        var request = exchange.getRequest();
+        return Mono.just(new ResponseEntity<>(
+                new ExceptionResponse(
+                        Instant.now().toString(),
+                        request.getURI().toString(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        exception.getMessage(),
+                        request.getId()),
+                HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }
