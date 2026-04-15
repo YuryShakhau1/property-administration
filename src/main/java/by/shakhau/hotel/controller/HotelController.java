@@ -1,7 +1,8 @@
 package by.shakhau.hotel.controller;
 
+import by.shakhau.hotel.controller.mapper.HotelControllerMapper;
+import by.shakhau.hotel.controller.request.CreateHotelRequest;
 import by.shakhau.hotel.controller.response.HotelResponse;
-import by.shakhau.hotel.controller.response.mapper.HotelResponseMapper;
 import by.shakhau.hotel.dto.Hotel;
 import by.shakhau.hotel.model.HotelFiler;
 import by.shakhau.hotel.service.HotelService;
@@ -34,12 +35,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class HotelController {
 
     private HotelService hotelService;
-    private HotelResponseMapper hotelResponseMapper;
+    private HotelControllerMapper hotelControllerMapper;
 
     @GetMapping(value = "/hotels", produces = APPLICATION_JSON_VALUE)
     public Flux<HotelResponse> getHotels() {
         return Flux.defer(() -> Flux.fromIterable(hotelService.findAll().stream()
-                        .map(h -> hotelResponseMapper.toResponse(h))
+                        .map(h -> hotelControllerMapper.toResponse(h))
                         .collect(Collectors.toList())))
                 .subscribeOn(Schedulers.boundedElastic());
     }
@@ -59,15 +60,15 @@ public class HotelController {
             @RequestParam(required = false) List<String> amenities) {
         return Flux.defer(() -> Flux.fromIterable(
                         hotelService.search(new HotelFiler(name, brand, city, country, amenities)).stream()
-                                .map(h -> hotelResponseMapper.toResponse(h))
+                                .map(h -> hotelControllerMapper.toResponse(h))
                                 .collect(Collectors.toList())))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping(value = "/hotels", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public Mono<HotelResponse> createHotel(@RequestBody Hotel hotel) {
-        return Mono.fromCallable(() -> Optional.ofNullable(hotelService.save(hotel))
-                        .map(h -> hotelResponseMapper.toResponse(h))
+    public Mono<HotelResponse> createHotel(@RequestBody CreateHotelRequest request) {
+        return Mono.fromCallable(() -> Optional.ofNullable(hotelService.save(hotelControllerMapper.toDto(request)))
+                        .map(h -> hotelControllerMapper.toResponse(h))
                         .orElseThrow())
                 .subscribeOn(Schedulers.boundedElastic());
     }

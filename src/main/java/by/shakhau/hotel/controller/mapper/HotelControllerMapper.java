@@ -1,15 +1,16 @@
-package by.shakhau.hotel.controller.response.mapper;
+package by.shakhau.hotel.controller.mapper;
 
+import by.shakhau.hotel.controller.request.CreateHotelRequest;
 import by.shakhau.hotel.controller.response.HotelResponse;
 import by.shakhau.hotel.dto.Address;
 import by.shakhau.hotel.dto.Hotel;
-import by.shakhau.hotel.model.AddressEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface HotelResponseMapper {
+public interface HotelControllerMapper {
 
     HotelResponse toResponse(Hotel dto);
+    Hotel toDto(CreateHotelRequest request);
 
     default String mapAddressToString(Address address) {
         if (address == null) {
