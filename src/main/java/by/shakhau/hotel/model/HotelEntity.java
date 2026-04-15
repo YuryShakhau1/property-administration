@@ -34,10 +34,10 @@ public class HotelEntity {
     @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
     private AddressEntity address;
 
-    @OneToOne(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
     private ContactsEntity contacts;
 
-    @OneToOne(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
     private ArrivalTimeEntity arrivalTime;
 
     @Column(name = "brand")

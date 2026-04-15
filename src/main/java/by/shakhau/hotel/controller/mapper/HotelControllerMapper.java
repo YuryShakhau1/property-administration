@@ -5,10 +5,12 @@ import by.shakhau.hotel.controller.response.HotelResponse;
 import by.shakhau.hotel.dto.Address;
 import by.shakhau.hotel.dto.Hotel;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface HotelControllerMapper {
 
+    @Mapping(target = "phone", source = "contacts.phone")
     HotelResponse toResponse(Hotel dto);
     Hotel toDto(CreateHotelRequest request);
 

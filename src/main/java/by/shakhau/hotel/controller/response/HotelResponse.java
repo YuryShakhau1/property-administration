@@ -16,9 +16,6 @@ public class HotelResponse {
     private Long id;
     private String name;
     private String description;
-    private String brand;
     private String address;
-    private Contacts contacts;
-    private ArrivalTime arrivalTime;
-    private List<String> amenities;
+    private String phone;
 }

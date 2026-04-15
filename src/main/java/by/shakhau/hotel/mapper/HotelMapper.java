@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = { AddressMapper.class, ContactsMapper.class, ArrivalTimeMapper.class })
 public interface HotelMapper {
 
-    @Mapping(target = "contacts", ignore = true)
     @Mapping(target = "arrivalTime", ignore = true)
     @Mapping(target = "amenities", ignore = true)
     Hotel toDto(HotelEntity entity);
