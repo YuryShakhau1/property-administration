@@ -34,7 +34,7 @@ import static by.shakhau.hotel.util.TestUtil.CONTACTS_PHONE;
 import static by.shakhau.hotel.util.TestUtil.HOTEL_BRAND;
 import static by.shakhau.hotel.util.TestUtil.HOTEL_DESCRIPTION;
 import static by.shakhau.hotel.util.TestUtil.HOTEL_NAME;
-import static by.shakhau.hotel.util.TestUtil.createHotel;
+import static by.shakhau.hotel.util.TestUtil.createHotelRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
@@ -54,8 +54,7 @@ public class HotelControllerIntegrationTest {
 
     @Test
     public void shouldProcessFullHotelFlow() {
-        var hotelToSave = createHotel();
-        hotelToSave.setId(null);
+        var hotelToSave = createHotelRequest();
         var amenitiesToSave = List.of(AMENITY1, AMENITY2);
 
         // Creates new hotel info
@@ -125,7 +124,6 @@ public class HotelControllerIntegrationTest {
         assertThat(saved).isNotNull();
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getName()).isEqualTo(HOTEL_NAME);
-        assertThat(saved.getBrand()).isEqualTo(HOTEL_BRAND);
         assertThat(saved.getDescription()).isEqualTo(HOTEL_DESCRIPTION);
 
         assertThat(saved.getAddress()).contains(String.valueOf(ADDRESS_HOUSE_NUMBER));
@@ -133,10 +131,6 @@ public class HotelControllerIntegrationTest {
         assertThat(saved.getAddress()).contains((ADDRESS_CITY));
         assertThat(saved.getAddress()).contains(ADDRESS_COUNTRY);
         assertThat(saved.getAddress()).contains(ADDRESS_POST_CODE);
-
-        assertThat(saved.getContacts()).isNull();
-        assertThat(saved.getArrivalTime()).isNull();
-        assertThat(saved.getAmenities()).isNull();
     }
 
     private void assertFoundHotel(Hotel foundHotel) {

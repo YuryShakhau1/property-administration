@@ -1,5 +1,9 @@
 package by.shakhau.hotel.util;
 
+import by.shakhau.hotel.controller.request.CreateAddressRequest;
+import by.shakhau.hotel.controller.request.CreateArrivalTimeRequest;
+import by.shakhau.hotel.controller.request.CreateContactsRequest;
+import by.shakhau.hotel.controller.request.CreateHotelRequest;
 import by.shakhau.hotel.dto.Address;
 import by.shakhau.hotel.dto.ArrivalTime;
 import by.shakhau.hotel.dto.Contacts;
@@ -126,6 +130,41 @@ public final class TestUtil {
 
     public static Contacts createContacts() {
         var contacts = new Contacts();
+        contacts.setEmail(CONTACTS_EMAIL);
+        contacts.setPhone(CONTACTS_PHONE);
+        return contacts;
+    }
+
+    public static CreateHotelRequest createHotelRequest() {
+        var hotel = new CreateHotelRequest();
+        hotel.setBrand(HOTEL_BRAND);
+        hotel.setName(HOTEL_NAME);
+        hotel.setDescription(HOTEL_DESCRIPTION);
+        hotel.setAddress(createAddressRequest());
+        hotel.setContacts(createContactsRequest());
+        hotel.setArrivalTime(createArrivalTimeRequest());
+        return hotel;
+    }
+
+    public static CreateAddressRequest createAddressRequest() {
+        var address = new CreateAddressRequest();
+        address.setCity(ADDRESS_CITY);
+        address.setCountry(ADDRESS_COUNTRY);
+        address.setStreet(ADDRESS_STREET);
+        address.setHouseNumber(ADDRESS_HOUSE_NUMBER);
+        address.setPostCode(ADDRESS_POST_CODE);
+        return address;
+    }
+
+    public static CreateArrivalTimeRequest createArrivalTimeRequest() {
+        var arrivalTime = new CreateArrivalTimeRequest();
+        arrivalTime.setCheckIn(CHECK_IN);
+        arrivalTime.setCheckOut(CHECK_OUT);
+        return arrivalTime;
+    }
+
+    public static CreateContactsRequest createContactsRequest() {
+        var contacts = new CreateContactsRequest();
         contacts.setEmail(CONTACTS_EMAIL);
         contacts.setPhone(CONTACTS_PHONE);
         return contacts;

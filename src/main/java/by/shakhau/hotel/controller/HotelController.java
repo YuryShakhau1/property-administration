@@ -123,7 +123,7 @@ public class HotelController {
     @GetMapping(value = "/histogram/{param}", produces = APPLICATION_JSON_VALUE)
     @ApiResponse(
             responseCode = "200",
-            description = "Creates histogram with count of found param values",
+            description = "Creates histogram with count of found param values like brand, city, country, amenities.",
             content = @Content(
                     schema = @Schema(implementation = String.class)
             )
