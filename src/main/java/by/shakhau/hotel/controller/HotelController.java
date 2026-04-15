@@ -6,6 +6,11 @@ import by.shakhau.hotel.controller.response.HotelResponse;
 import by.shakhau.hotel.dto.Hotel;
 import by.shakhau.hotel.model.HotelFiler;
 import by.shakhau.hotel.service.HotelService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -38,6 +43,10 @@ public class HotelController {
     private HotelControllerMapper hotelControllerMapper;
 
     @GetMapping(value = "/hotels", produces = APPLICATION_JSON_VALUE)
+    @ApiResponse(
+            responseCode = "200",
+            description = "Returns a list of all hotels."
+    )
     public Flux<HotelResponse> getHotels() {
         return Flux.defer(() -> Flux.fromIterable(hotelService.findAll().stream()
                         .map(h -> hotelControllerMapper.toResponse(h))
@@ -46,12 +55,20 @@ public class HotelController {
     }
 
     @GetMapping(value = "/hotels/{id}", produces = APPLICATION_JSON_VALUE)
-    public Mono<Hotel> getHotel(@PathVariable long id) {
+    @ApiResponse(
+            responseCode = "200",
+            description = "Returns the hotel by id."
+    )
+    public Mono<Hotel> getHotel(@PathVariable Long id) {
         return Mono.fromCallable(() -> hotelService.findById(id))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping(value = "/search", produces = APPLICATION_JSON_VALUE)
+    @ApiResponse(
+            responseCode = "200",
+            description = "Returns a list of hotels by search parameters. Any parameter is not mandatory"
+    )
     public Flux<HotelResponse> searchHotels(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String brand,
@@ -66,6 +83,14 @@ public class HotelController {
     }
 
     @PostMapping(value = "/hotels", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ApiResponse(
+            responseCode = "200",
+            description = "Creates hotel info",
+            content = @Content(
+                    mediaType = APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = CreateHotelRequest.class)
+            )
+    )
     public Mono<HotelResponse> createHotel(@RequestBody CreateHotelRequest request) {
         return Mono.fromCallable(() -> Optional.ofNullable(hotelService.save(hotelControllerMapper.toDto(request)))
                         .map(h -> hotelControllerMapper.toResponse(h))
@@ -74,14 +99,38 @@ public class HotelController {
     }
 
     @PostMapping(value = "/hotels/{id}/amenities", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public Mono<Void> addHotelAmenities(@PathVariable Long id, @RequestBody List<String> amenities) {
+    @ApiResponse(
+            responseCode = "200",
+            description = "Adds amenities to the hotel info",
+            content = @Content(
+                    array = @ArraySchema(
+                            schema = @Schema(implementation = String.class)
+                    )
+            )
+    )
+    public Mono<Void> addHotelAmenities(
+            @Schema(accessMode = Schema.AccessMode.AUTO)
+            @PathVariable Long id,
+            @RequestBody List<String> amenities) {
         return Mono.fromRunnable(() -> hotelService.addAmenities(id, amenities))
                 .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }
 
     @GetMapping(value = "/histogram/{param}", produces = APPLICATION_JSON_VALUE)
-    public Mono<Map<String, Long>> getHistogram(@PathVariable String param) {
+    @ApiResponse(
+            responseCode = "200",
+            description = "Creates histogram with count of found param values",
+            content = @Content(
+                    schema = @Schema(implementation = String.class)
+            )
+    )
+    public Mono<Map<String, Long>> getHistogram(
+            @Parameter(
+                    description = "Parameter",
+                    example = "amenities"
+            )
+            @PathVariable String param) {
         return Mono.fromCallable(() -> hotelService.getHistogram(param))
                 .subscribeOn(Schedulers.boundedElastic());
     }

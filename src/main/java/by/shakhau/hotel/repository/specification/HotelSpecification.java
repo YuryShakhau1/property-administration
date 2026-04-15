@@ -1,11 +1,10 @@
 package by.shakhau.hotel.repository.specification;
 
-import by.shakhau.hotel.model.HotelFiler;
 import by.shakhau.hotel.model.HotelEntity;
+import by.shakhau.hotel.model.HotelFiler;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

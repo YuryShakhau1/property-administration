@@ -1,7 +1,6 @@
 package by.shakhau.hotel.mapper;
 
 import by.shakhau.hotel.dto.Hotel;
-import by.shakhau.hotel.model.AddressEntity;
 import by.shakhau.hotel.model.AmenityEntity;
 import by.shakhau.hotel.model.HotelEntity;
 import org.mapstruct.Mapper;
