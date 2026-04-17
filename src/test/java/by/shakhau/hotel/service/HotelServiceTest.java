@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -278,6 +279,22 @@ public class HotelServiceTest {
         List<Hotel> foundHotels = service.search(filer);
 
         assertThat(foundHotels).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnEmptyHistogramWhenNoData() {
+        var param = "brand";
+        when(hotelRepository.countByBrand()).thenReturn(Collections.emptyList());
+
+        Map<String, Long> histogram = service.getHistogram(param);
+
+        verify(hotelRepository, never()).countByCity();
+        verify(hotelRepository, never()).countByCountry();
+        verify(hotelRepository, never()).countByAmenities();
+
+        assertThat(histogram).isNotNull();
+        assertThat(histogram.size()).isEqualTo(1);
+        assertThat(histogram.get(param)).isEqualTo(0);
     }
 
     @Test

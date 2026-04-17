@@ -91,6 +91,10 @@ public class HotelServiceImpl implements HotelService {
             default -> throw new IllegalArgumentException("Unknown param: " + param);
         }
 
+        if (rows.isEmpty()) {
+            return Map.of(param, 0L);
+        }
+
         return rows.stream()
                 .collect(Collectors.toMap(
                         r -> (String) r[0],

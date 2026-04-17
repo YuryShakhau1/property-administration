@@ -5,19 +5,18 @@ import by.shakhau.hotel.dto.Address;
 import by.shakhau.hotel.dto.ArrivalTime;
 import by.shakhau.hotel.dto.Contacts;
 import by.shakhau.hotel.dto.Hotel;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static by.shakhau.hotel.util.TestUtil.ADDRESS_CITY;
 import static by.shakhau.hotel.util.TestUtil.ADDRESS_COUNTRY;
@@ -36,85 +35,79 @@ import static by.shakhau.hotel.util.TestUtil.HOTEL_DESCRIPTION;
 import static by.shakhau.hotel.util.TestUtil.HOTEL_NAME;
 import static by.shakhau.hotel.util.TestUtil.createHotelRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class HotelControllerIntegrationTest {
 
-    @Value("${server.port}")
-    private Integer port;
-    private WebTestClient webClient;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    public void setup() {
-        webClient = WebTestClient.bindToServer()
-                .baseUrl("http://localhost:" + port)
-                .build();
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    public void shouldProcessFullHotelFlow() {
+    public void shouldProcessFullHotelFlow() throws Exception {
         var hotelToSave = createHotelRequest();
         var amenitiesToSave = List.of(AMENITY1, AMENITY2);
 
         // Creates new hotel info
-        HotelResponse saved = webClient.post().uri("/property-view/hotels")
-                .headers(headers -> headers.setAccept(List.of(MediaType.APPLICATION_JSON)))
-                .body(BodyInserters.fromValue(hotelToSave))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(HotelResponse.class)
-                .returnResult().getResponseBody();
-
+        HotelResponse saved = objectMapper.readValue(
+                mockMvc.perform(post("/property-view/hotels")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(hotelToSave)))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString(), HotelResponse.class);
         assertHotelResponse(saved);
 
         // Gets just created hotel info
-        Hotel foundHotel = webClient.get().uri("/property-view/hotels/{id}", saved.getId())
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Hotel.class)
-                .returnResult().getResponseBody();
-
+        Hotel foundHotel = objectMapper.readValue(
+                mockMvc.perform(get("/property-view/hotels/{id}", saved.getId()))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString(), Hotel.class);
         assertFoundHotel(foundHotel);
 
         // Adds amenities to created hotel info
-        webClient.post().uri("/property-view/hotels/{id}/amenities", saved.getId())
-                .headers(headers -> headers.setAccept(List.of(MediaType.APPLICATION_JSON)))
-                .body(BodyInserters.fromValue(amenitiesToSave))
-                .exchange()
-                .expectStatus().isOk();
+        mockMvc.perform(post("/property-view/hotels/{id}/amenities", saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(amenitiesToSave)))
+                .andExpect(status().isOk());
 
         // Gets just created hotel info
-        List<HotelResponse> foundHotels = webClient.get().uri(uriBuilder -> uriBuilder
-                        .path("/property-view/search")
-                        .queryParam("amenities", AMENITY1)
-                        .queryParamIfPresent("stars", Optional.of(5)) // если параметр опциональный
-                        .build()
-                )
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(HotelResponse.class)
-                .returnResult().getResponseBody();
-
+        List<HotelResponse> foundHotels = objectMapper.readValue(
+                mockMvc.perform(get("/property-view/search")
+                                .param("amenities", AMENITY1))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString(), new TypeReference<>() {});
         assertThat(foundHotels).isNotEmpty();
         assertHotelResponse(foundHotels.getFirst());
 
         // Gets histogram by amenities
-        Map<String, Long> histogram = webClient.get().uri("/property-view/histogram/{param}", "amenities")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<Map<String, Long>>() {})
-                .returnResult().getResponseBody();
-
+        Map<String, Long> histogram = objectMapper.readValue(
+                mockMvc.perform(get("/property-view/histogram/{param}", "amenities"))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString(), new TypeReference<>() {});
         assertHistogram(histogram);
 
         // Gets all hotels
-        List<HotelResponse> allHotels = webClient.get().uri("/property-view/hotels")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(HotelResponse.class)
-                .returnResult().getResponseBody();
-
+        List<HotelResponse> allHotels = objectMapper.readValue(
+                mockMvc.perform(get("/property-view/hotels"))
+                        .andExpect(status().isOk())
+                        .andReturn()
+                        .getResponse()
+                        .getContentAsString(), new TypeReference<>() {});
         assertThat(allHotels).isNotEmpty();
         assertThat(allHotels).hasSize(1);
         assertHotelResponse(allHotels.getFirst());
