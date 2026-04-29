@@ -15,4 +15,5 @@ public interface HotelService {
     void addAmenities(Long id, Collection<String> amenities);
     List<Hotel> search(HotelFiler hotelFiler);
     Map<String, Long> getHistogram(String param);
+    void delete(Long id);
 }

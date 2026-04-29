@@ -101,4 +101,9 @@ public class HotelServiceImpl implements HotelService {
                         r -> (Long) r[1]
                 ));
     }
+
+    @Override
+    public void delete(Long id) {
+        hotelRepository.deleteById(id);
+    }
 }

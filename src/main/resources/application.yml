@@ -12,7 +12,7 @@ spring:
 
   jpa:
     hibernate.ddl-auto: none
-    show-sql: true
+    show-sql: false
 
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
@@ -22,6 +22,6 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-server:
-  address: 127.0.0.1
-  port: 8092
+#server:
+#  address: 127.0.0.1
+#  port: 8092

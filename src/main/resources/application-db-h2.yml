@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:property_administration;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:file:./data/db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:password}
     platform: h2

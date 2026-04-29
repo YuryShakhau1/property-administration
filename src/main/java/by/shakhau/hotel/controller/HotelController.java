@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -120,5 +121,17 @@ public class HotelController {
             )
             @PathVariable String param) {
         return hotelService.getHistogram(param);
+    }
+
+    @DeleteMapping(value = "/hotels/{id}", produces = APPLICATION_JSON_VALUE)
+    @ApiResponse(
+            responseCode = "200",
+            description = "Creates histogram with count of found param values like brand, city, country, amenities.",
+            content = @Content(
+                    schema = @Schema(implementation = String.class)
+            )
+    )
+    public void deleteHotel(@PathVariable Long id) {
+        hotelService.delete(id);
     }
 }
