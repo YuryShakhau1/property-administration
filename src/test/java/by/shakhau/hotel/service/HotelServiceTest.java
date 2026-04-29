@@ -71,7 +71,7 @@ public class HotelServiceTest {
         assertThat(foundHotels).isNotNull();
         assertThat(foundHotels.size()).isEqualTo(1);
 
-        Hotel foundHotel = foundHotels.getFirst();
+        Hotel foundHotel = foundHotels.get(0);
         assertThat(foundHotel).isNotNull();
         assertThat(foundHotel.getId()).isEqualTo(HOTEL_ID);
         assertThat(foundHotel.getName()).isEqualTo(hotel.getName());
@@ -204,7 +204,7 @@ public class HotelServiceTest {
 
         List<Hotel> foundHotels = service.search(filer);
 
-        Hotel foundHotel = foundHotels.getFirst();
+        Hotel foundHotel = foundHotels.get(0);
         assertThat(foundHotel).isNotNull();
         assertThat(foundHotel.getId()).isEqualTo(HOTEL_ID);
         assertThat(foundHotel.getName()).isEqualTo(hotel.getName());

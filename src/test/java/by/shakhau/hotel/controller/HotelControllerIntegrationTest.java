@@ -90,7 +90,7 @@ public class HotelControllerIntegrationTest {
                         .getResponse()
                         .getContentAsString(), new TypeReference<>() {});
         assertThat(foundHotels).isNotEmpty();
-        assertHotelResponse(foundHotels.getFirst());
+        assertHotelResponse(foundHotels.get(0));
 
         // Gets histogram by amenities
         Map<String, Long> histogram = objectMapper.readValue(
@@ -110,7 +110,7 @@ public class HotelControllerIntegrationTest {
                         .getContentAsString(), new TypeReference<>() {});
         assertThat(allHotels).isNotEmpty();
         assertThat(allHotels).hasSize(1);
-        assertHotelResponse(allHotels.getFirst());
+        assertHotelResponse(allHotels.get(0));
     }
 
     private void assertHotelResponse(HotelResponse saved) {
